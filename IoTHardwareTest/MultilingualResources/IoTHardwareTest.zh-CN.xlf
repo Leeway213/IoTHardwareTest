@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="zh-CN" original="IOTHARDWARETEST/STRINGS/EN-US/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.1795.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="IOTHARDWARETEST/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
+        <trans-unit id="Audio" translate="yes" xml:space="preserve">
+          <source>Audio</source>
+          <target state="final">音频</target>
+        </trans-unit>
+        <trans-unit id="Slogan.Text" translate="yes" xml:space="preserve">
+          <source>哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈</source>
+          <target state="new">哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈</target>
+        </trans-unit>
+        <trans-unit id="Network" translate="yes" xml:space="preserve">
+          <source>Network</source>
+          <target state="new">Network</target>
+        </trans-unit>
+        <trans-unit id="Storage" translate="yes" xml:space="preserve">
+          <source></source>
+          <target state="new"></target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>
