@@ -19,8 +19,8 @@
           <target state="new">Network</target>
         </trans-unit>
         <trans-unit id="Storage" translate="yes" xml:space="preserve">
-          <source></source>
-          <target state="new"></target>
+          <source>Storage</source>
+          <target state="new">Storage</target>
         </trans-unit>
       </group>
     </body>

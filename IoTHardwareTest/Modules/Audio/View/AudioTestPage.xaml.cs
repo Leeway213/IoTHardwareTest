@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Audio;
+using Windows.Media.Devices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,7 +34,8 @@ namespace IoTHardwareTest.Modules.Audio.View
         {
             base.OnNavigatedTo(e);
 
-            AudioGraphSettings settings = new AudioGraphSettings(Windows.Media.Render.AudioRenderCategory.Media);
+            var audioCaptureAqs = MediaDevice.GetAudioCaptureSelector();
+            var devInfos = await DeviceInformation.FindAllAsync(audioCaptureAqs);
         }
     }
 }

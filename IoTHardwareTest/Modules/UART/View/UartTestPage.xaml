@@ -8,6 +8,25 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Background="DarkGray" BorderThickness="2" BorderBrush="LightCyan">
+            <TextBlock VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="20"
+                       Text="UART Test"
+                       FontSize="60"
+                       />
+        </Grid>
+        <RelativePanel x:Name="rootPanel" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Margin="20">
+                <TextBlock Text="COM Device:"
+                           TextAlignment="Center" FontSize="30"></TextBlock>
+                <ComboBox VerticalAlignment="Center" Margin="20,0,0,0"></ComboBox>
+            </StackPanel>
+        </RelativePanel>
 
     </Grid>
 </Page>
