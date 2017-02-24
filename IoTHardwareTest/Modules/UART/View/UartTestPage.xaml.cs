@@ -1,8 +1,15 @@
-﻿using System;
+﻿using IoTHardwareTest.Modules.UART.ViewModel;
+using IoTHardwareTest.Tools;
+using IoTHardwareTest.Tools.MVVM;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,6 +29,9 @@ namespace IoTHardwareTest.Modules.UART.View
     /// </summary>
     public sealed partial class UartTestPage : Page
     {
+
+        private UartPageViewModel Vm => ViewModelLocator.Locator.UartPageViewModel;
+
         public UartTestPage()
         {
             this.InitializeComponent();

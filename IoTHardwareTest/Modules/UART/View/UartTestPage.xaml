@@ -5,6 +5,8 @@
     xmlns:local="using:IoTHardwareTest.Modules.UART.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dev="using:Windows.Devices.Enumeration"
+    xmlns:tools="using:IoTHardwareTest.Tools"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -12,6 +14,7 @@
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
         <Grid Background="DarkGray" BorderThickness="2" BorderBrush="LightCyan">
             <TextBlock VerticalAlignment="Center"
                        HorizontalAlignment="Left"
@@ -21,10 +24,77 @@
                        />
         </Grid>
         <RelativePanel x:Name="rootPanel" Grid.Row="1">
-            <StackPanel Orientation="Horizontal" Margin="20">
-                <TextBlock Text="COM Device:"
-                           TextAlignment="Center" FontSize="30"></TextBlock>
-                <ComboBox VerticalAlignment="Center" Margin="20,0,0,0"></ComboBox>
+
+            <RelativePanel x:Name="devSelectorPanel" Margin="20">
+                <TextBlock x:Name="tbComDev" Text="COM Device:"
+                            Margin="10,10,0,0"
+                           TextAlignment="Center" FontSize="20"></TextBlock>
+                <ComboBox x:Name="cbDevId" VerticalAlignment="Center"
+                          Margin="2,10,0,0"
+                          RelativePanel.RightOf="tbComDev"
+                          ItemsSource="{x:Bind Vm.DevCollection, Mode=OneWay}"
+                          SelectedIndex="{x:Bind Vm.SelDevIndex, Mode=TwoWay}"
+                          >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="dev:DeviceInformation">
+                            <TextBlock Text="{x:Bind Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <StackPanel RelativePanel.Below="tbComDev"
+                            Margin="20">
+                    <TextBlock FontSize="20" Text="Device Information"></TextBlock>
+                    <TextBlock x:Name="tbDevName" FontSize="10" Margin="0,10,0,0"
+                               Text="{x:Bind Vm.SelectedDev.Name, Mode=OneWay}"></TextBlock>
+                    <TextBlock x:Name="tbDevId" 
+                           FontSize="10"
+                           Text="{x:Bind Vm.SelectedDev.Id, Mode=OneWay}"
+                           ></TextBlock>
+                </StackPanel>
+            </RelativePanel>
+            <StackPanel x:Name="cusParaPanel" RelativePanel.Below="devSelectorPanel">
+                <StackPanel 
+                x:Name="baudratePanel"
+                Margin="10,0,0,0"
+                >
+                    <TextBlock Text="Baudrate:" HorizontalAlignment="Left"></TextBlock>
+                    <TextBox x:Name="tbBaudrate" Text="{x:Bind Vm.BaudRate, Mode=TwoWay}" Width="80" HorizontalAlignment="Left"/>
+                </StackPanel>
+                <StackPanel 
+                x:Name="dataBitsPanel"
+                Margin="10,10,0,0"
+                >
+                    <TextBlock Text="DataBits:" HorizontalAlignment="Left"></TextBlock>
+                    <TextBox x:Name="tbDataBits" Text="16" Width="80" HorizontalAlignment="Left"/>
+                </StackPanel>
+                <StackPanel 
+                x:Name="ReadTimeoutPanel"
+                Margin="10,10,0,0"
+                >
+                    <TextBlock Text="ReadTimeout(ms):" HorizontalAlignment="Left"></TextBlock>
+                    <TextBox x:Name="tbReadTimeout" Text="0" Width="80" HorizontalAlignment="Left"/>
+                </StackPanel>
+                <StackPanel 
+                x:Name="WriteTimeoutPanel"
+                Margin="10,10,0,0"
+                >
+                    <TextBlock HorizontalAlignment="Left" Text="WriteTimeout(ms):"></TextBlock>
+                    <TextBox x:Name="tbWriteTimeout" HorizontalAlignment="Left" Text="0" Width="80"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel x:Name="selParaPanel" RelativePanel.RightOf="cusParaPanel" 
+                        RelativePanel.Below="devSelectorPanel">
+                <ComboBox Header="BreakSignal:">
+                    <ComboBoxItem Content="Yes"></ComboBoxItem>
+                    <ComboBoxItem Content="No"></ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel RelativePanel.RightOf="devSelectorPanel"
+                        RelativePanel.AlignTopWith="devSelectorPanel"
+                        Margin="20"
+                        Orientation="Horizontal">
+                <Button x:Name="btnConn" Content="Connect" />
+                <Button x:Name="btnDisConn" Margin="10" Content="Disconnect" />
             </StackPanel>
         </RelativePanel>
 

@@ -109,7 +109,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState x:Name="WideView">
@@ -141,6 +141,7 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+
         <ToggleButton x:Name="splitViewToggle" Canvas.ZIndex="10"
                       HorizontalAlignment="Left" VerticalAlignment="Top"
                       IsChecked="{x:Bind Vm.IsPaneOpen, Mode=TwoWay}"
@@ -184,6 +185,7 @@
                     </ListView>
                 </Grid>
             </SplitView.Pane>
+            <Grid>
                 <Frame x:Name="mainFrame" Background="Transparent" >
                     <i:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Navigated">
@@ -194,6 +196,24 @@
                         </core:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </Frame>
+                <Grid Canvas.ZIndex="11" VerticalAlignment="Bottom" 
+                      Background="{x:Bind Vm.MsboxBackground, Mode=OneWay}" 
+                      Visibility="{x:Bind Vm.MsboxVisibility, Mode=OneWay}" 
+                      IsHitTestVisible="{x:Bind Vm.MsboxAvailable,Mode=OneWay}">
+                    <Button HorizontalAlignment="Right" VerticalAlignment="Top" 
+                            Margin="10" Width="20" Height="20" 
+                            BorderThickness="0" 
+                            Style="{StaticResource NavigationBackButtonNormalStyle}"
+                            Command="{x:Bind Vm.ClearMessage}"
+                            >
+                        <Button.Content>
+                            <SymbolIcon Symbol="Cancel"></SymbolIcon>
+                        </Button.Content>
+                    </Button>
+                    <TextBlock Margin="20" Text="{x:Bind Vm.Message,Mode=OneWay}"/>
+                </Grid>
+            </Grid>
+                
         </SplitView>
     </Grid>
 </Page>

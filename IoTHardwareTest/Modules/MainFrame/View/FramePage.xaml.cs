@@ -63,5 +63,10 @@ namespace IoTHardwareTest.Modules.MainFrame.View
         {
             NavigationHelper.Navigate(typeof(SettingPage.View.SettingPage));
         }
+
+        private void Canvas_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+
+        }
     }
 }

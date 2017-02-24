@@ -132,12 +132,14 @@
     <Compile Include="Modules\Storage\View\StorTestPage.xaml.cs">
       <DependentUpon>StorTestPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\UART\ViewModel\UartPageViewModel.cs" />
     <Compile Include="Modules\UART\View\UartTestPage.xaml.cs">
       <DependentUpon>UartTestPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\AppSettings\AppSettingHelper.cs" />
     <Compile Include="Tools\Constants.cs" />
+    <Compile Include="Tools\GlobalMethod.cs" />
     <Compile Include="Tools\MVVM\ViewModelLocator.cs" />
     <Compile Include="Tools\Navigation\NavigationHelper.cs" />
     <Compile Include="Tools\StringResHelpler.cs" />
@@ -199,9 +201,7 @@
     <XliffResource Include="MultilingualResources\IoTHardwareTest.zh-CN.xlf" />
     <XliffResource Include="MultilingualResources\IoTHardwareTest.zh-HK.xlf" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modules\UART\ViewModel\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
