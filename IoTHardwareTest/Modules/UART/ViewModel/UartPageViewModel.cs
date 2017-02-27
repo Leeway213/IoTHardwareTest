@@ -1,5 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Threading;
 using IoTHardwareTest.Tools;
+using IoTHardwareTest.Tools.DeviceOperators;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,17 +17,14 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
 {
     public class UartPageViewModel : ViewModelBase
     {
-        private SerialDevice serialPort;
-
-        private CancellationTokenSource readCts;
 
         public UartPageViewModel()
         {
             SelDevIndex = -1;
-            NotConnected = true;
+            Idle = true;
             DevCollection = new ObservableCollection<DeviceInformation>();
-            ScanSerialDevice();
             RestoreDefaultPara();
+            GetSerialDevices();
         }
 
         /// <summary>
@@ -32,89 +32,92 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         /// </summary>
         private void RestoreDefaultPara()
         {
-            BaudRate = 9600;
-            DataBits = 16;
+            BaudRate = 115200;
+            DataBits = 8;
             BreakSignalState = false;
-            HandShake = SerialHandshake.None;
-            IsDataTerminalReadyEnabled = false;
-            IsRequestToSendEnabled = false;
+            Handshake = SerialHandshake.None;
+            IsDataTerminalReadyEnabled = true;
+            IsRequestToSendEnabled = true;
             Parity = SerialParity.None;
             ReadTimeout = TimeSpan.FromMilliseconds(1000);
             WriteTimeout = TimeSpan.FromMilliseconds(1000);
-            StopBit = SerialStopBitCount.One;
+            StopBits = SerialStopBitCount.One;
         }
 
-        private async void Connect()
+        public RelayCommand SelectionChangedCmd
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+               {
+                   if (ComPortDevice.IsConnected)
+                       ComPortDevice.Disconnect();
+                   await ComPortDevice.Connect(SelectedDev.Id);
+               });
+            }
+        }
+
+        public RelayCommand ListenCmd
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    ComPortDevice.SetParam(BaudRate, nameof(BaudRate));
+                    ComPortDevice.SetParam(IsDataTerminalReadyEnabled, nameof(IsDataTerminalReadyEnabled));
+                    ComPortDevice.SetParam(DataBits, nameof(DataBits));
+                    ComPortDevice.SetParam(StopBits, nameof(StopBits));
+                    ComPortDevice.SetParam(IsRequestToSendEnabled, nameof(IsRequestToSendEnabled));
+                    ComPortDevice.SetParam(BreakSignalState, nameof(BreakSignalState));
+                    ComPortDevice.SetParam(Handshake, nameof(Handshake));
+                    ComPortDevice.SetParam(Parity, nameof(Parity));
+                    ComPortDevice.SetParam(ReadTimeout, nameof(ReadTimeout));
+                    ComPortDevice.SetParam(WriteTimeout, nameof(WriteTimeout));
+
+                    ComPortDevice.ListenStateChange += ComPortDevice_ListenStateChange;
+
+                    ComPortDevice.Listen();
+                });
+            }
+        }
+
+        private void ComPortDevice_ListenStateChange()
+        {
+            Idle = !ComPortDevice.IsListening;
+        }
+
+        public RelayCommand StopListenCmd
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    if (ComPortDevice.IsListening)
+                        ComPortDevice.StopListen();
+                });
+            }
+        }
+
+        private async void GetSerialDevices()
         {
             try
             {
-                serialPort = await SerialDevice.FromIdAsync(SelectedDev.Id);
-                if (serialPort != null)
-                {
-                    NotConnected = false;
-                    GlobalMethod.ShowMsg("Connected to serial device:" + "\n" + SelectedDev.Name + "\n" + SelectedDev.Id, MainFrame.ViewModel.MsgType.Info);
-                    serialPort.BaudRate = BaudRate;
-                    serialPort.BreakSignalState = BreakSignalState;
-                    serialPort.DataBits = DataBits;
-                    serialPort.Handshake = HandShake;
-                    serialPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
-                    serialPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
-                    serialPort.Parity = Parity;
-                    serialPort.ReadTimeout = ReadTimeout;
-                    serialPort.StopBits = StopBit;
-                    serialPort.WriteTimeout = WriteTimeout;
-
-                    readCts = new CancellationTokenSource();
-
-                    Listen();
-                }
-                else
-                    GlobalMethod.ShowMsg("Cannot get serial device:" + "\n" + SelectedDev.Name + "\n" + SelectedDev.Id, MainFrame.ViewModel.MsgType.Error);
-            }
-            catch (Exception ex)
-            {
-                GlobalMethod.ShowMsg(ex.Message, MainFrame.ViewModel.MsgType.Exception);
-            }
-        }
-
-        private void Disconnect()
-        {
-            if (serialPort != null)
-            {
-                serialPort.Dispose();
-                serialPort = null;
-                //RestoreDefaultPara();
-            }
-        }
-
-        private void CancelReadTask()
-        {
-            if (readCts != null)
-            {
-                if (!readCts.IsCancellationRequested)
-                {
-                    readCts.Cancel();
-                }
-            }
-        }
-
-        private void Listen()
-        {
-        }
-
-        private async void ScanSerialDevice()
-        {
-            try
-            {
-                string aqs = SerialDevice.GetDeviceSelector();
-                var devs = await DeviceInformation.FindAllAsync(aqs);
+                var devs = await ComPortDevice.ScanSerialDevices();
                 foreach (var item in devs)
                 {
                     DevCollection.Add(item);
                 }
                 if (DevCollection.Count > 0)
                 {
-                    SelDevIndex = 0;
+                    await Task.Factory.StartNew(() =>
+                    {
+                        //Sleep 100ms to wait all property & command binding
+                        Task.Delay(100).Wait();
+                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                        {
+                            SelDevIndex = 0;
+                        });
+                    });
                 }
             }
             catch (Exception ex)
@@ -150,15 +153,18 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public UInt32 BaudRate
         {
             get { return _baudrate; }
-            set { Set(ref _baudrate, value); }
+            set
+            {
+                Set(ref _baudrate, value);
+            }
         }
 
-        private bool _notConnected;
+        private bool _idle;
 
-        public bool NotConnected
+        public bool Idle
         {
-            get { return _notConnected; }
-            set { Set(ref _notConnected, value); }
+            get { return _idle; }
+            set { Set(ref _idle, value); }
         }
 
         private UInt16 _databits;
@@ -166,7 +172,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public UInt16 DataBits
         {
             get { return _databits; }
-            set { Set(ref _databits, value); }
+            set
+            {
+                Set(ref _databits, value);
+            }
         }
 
         private Boolean _breaksignalstate;
@@ -174,15 +183,21 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public Boolean BreakSignalState
         {
             get { return _breaksignalstate; }
-            set { Set(ref _breaksignalstate, value); }
+            set
+            {
+                Set(ref _breaksignalstate, value);
+            }
         }
 
         private SerialHandshake _handshake;
 
-        public SerialHandshake HandShake
+        public SerialHandshake Handshake
         {
             get { return _handshake; }
-            set { Set(ref _handshake, value); }
+            set
+            {
+                Set(ref _handshake, value);
+            }
         }
 
         private Boolean _isDataTerminalReadyEnabled;
@@ -190,7 +205,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public Boolean IsDataTerminalReadyEnabled
         {
             get { return _isDataTerminalReadyEnabled; }
-            set { Set(ref _isDataTerminalReadyEnabled, value); }
+            set
+            {
+                Set(ref _isDataTerminalReadyEnabled, value);
+            }
         }
 
         private Boolean _isRequestToSendEnabled;
@@ -198,7 +216,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public Boolean IsRequestToSendEnabled
         {
             get { return _isRequestToSendEnabled; }
-            set { Set(ref _isRequestToSendEnabled, value); }
+            set
+            {
+                Set(ref _isRequestToSendEnabled, value);
+            }
         }
 
         private SerialParity _parity;
@@ -206,7 +227,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public SerialParity Parity
         {
             get { return _parity; }
-            set { Set(ref _parity, value); }
+            set
+            {
+                Set(ref _parity, value);
+            }
         }
 
         private TimeSpan _readTimeout;
@@ -214,15 +238,21 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public TimeSpan ReadTimeout
         {
             get { return _readTimeout; }
-            set { Set(ref _readTimeout, value); }
+            set
+            {
+                Set(ref _readTimeout, value);
+            }
         }
 
-        private SerialStopBitCount _stopBit;
+        private SerialStopBitCount _stopBits;
 
-        public SerialStopBitCount StopBit
+        public SerialStopBitCount StopBits
         {
-            get { return _stopBit; }
-            set { Set(ref _stopBit, value); }
+            get { return _stopBits; }
+            set
+            {
+                Set(ref _stopBits, value);
+            }
         }
 
         private TimeSpan _writeTimeout;
@@ -230,7 +260,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public TimeSpan WriteTimeout
         {
             get { return _writeTimeout; }
-            set { Set(ref _writeTimeout, value); }
+            set
+            {
+                Set(ref _writeTimeout, value);
+            }
         }
 
     }

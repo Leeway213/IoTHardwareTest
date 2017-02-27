@@ -139,6 +139,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\AppSettings\AppSettingHelper.cs" />
     <Compile Include="Tools\Constants.cs" />
+    <Compile Include="Tools\Converters\BooleanToIntConverter.cs" />
+    <Compile Include="Tools\Converters\EnumToIntConverter.cs" />
+    <Compile Include="Tools\Converters\TrueFalseConverter.cs" />
+    <Compile Include="Tools\DeviceOperators\ComPortDevice.cs" />
     <Compile Include="Tools\GlobalMethod.cs" />
     <Compile Include="Tools\MVVM\ViewModelLocator.cs" />
     <Compile Include="Tools\Navigation\NavigationHelper.cs" />
@@ -201,7 +205,9 @@
     <XliffResource Include="MultilingualResources\IoTHardwareTest.zh-CN.xlf" />
     <XliffResource Include="MultilingualResources\IoTHardwareTest.zh-HK.xlf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modules\UART\View\Controls\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

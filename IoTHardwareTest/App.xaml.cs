@@ -1,4 +1,5 @@
-﻿using IoTHardwareTest.Modules.MainFrame.View;
+﻿using GalaSoft.MvvmLight.Threading;
+using IoTHardwareTest.Modules.MainFrame.View;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +32,7 @@ namespace IoTHardwareTest
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
         }
 
         /// <summary>
@@ -78,6 +80,7 @@ namespace IoTHardwareTest
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
+            DispatcherHelper.Initialize();
         }
 
         /// <summary>
