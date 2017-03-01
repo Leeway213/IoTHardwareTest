@@ -15,6 +15,12 @@ using Windows.Devices.SerialCommunication;
 
 namespace IoTHardwareTest.Modules.UART.ViewModel
 {
+    public enum DataType
+    {
+        String,
+        Hex
+    }
+
     public class UartPageViewModel : ViewModelBase
     {
 
@@ -26,6 +32,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         public UartPageViewModel()
         {
             SelDevIndex = -1;
+            SendDataType = DataType.String;
             Idle = true;
             DevCollection = new ObservableCollection<DeviceInformation>();
             RestoreDefaultPara();
@@ -47,6 +54,37 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             ReadTimeout = TimeSpan.FromMilliseconds(1000);
             WriteTimeout = TimeSpan.FromMilliseconds(1000);
             StopBits = SerialStopBitCount.One;
+        }
+
+        public RelayCommand<string> SendDataCmd
+        {
+            get
+            {
+                return new RelayCommand<string>(async (data) =>
+                {
+                    switch(SendDataType)
+                    {
+                        case DataType.String:
+                            if (string.IsNullOrEmpty(data))
+                            {
+                                byte[] b = { 0x0D };
+                                await ComPortDevice.SendData(b);
+                            }
+                            else
+                            {
+                                byte[] bData = Encoding.ASCII.GetBytes(data);
+                                await ComPortDevice.SendData(bData);
+                            }
+                            break;
+                        case DataType.Hex:
+                            int i = Convert.ToInt32(data, 16);
+                            var bInt = System.BitConverter.GetBytes(i);
+                            await ComPortDevice.SendData(bInt);
+                            break;
+                    }
+                    
+                });
+            }
         }
 
         /// <summary>
@@ -72,26 +110,40 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         {
             get
             {
-                return new RelayCommand(() =>
+                return new RelayCommand(async () =>
                 {
+                    //if (ComPortDevice.IsConnected)
+                    //    ComPortDevice.Disconnect();
+                    //await ComPortDevice.Connect(SelectedDev.Id);
                     //Set parameters for serial device listening
-                    ComPortDevice.SetParam(BaudRate, nameof(BaudRate));
-                    ComPortDevice.SetParam(IsDataTerminalReadyEnabled, nameof(IsDataTerminalReadyEnabled));
-                    ComPortDevice.SetParam(DataBits, nameof(DataBits));
-                    ComPortDevice.SetParam(StopBits, nameof(StopBits));
-                    ComPortDevice.SetParam(IsRequestToSendEnabled, nameof(IsRequestToSendEnabled));
-                    ComPortDevice.SetParam(BreakSignalState, nameof(BreakSignalState));
-                    ComPortDevice.SetParam(Handshake, nameof(Handshake));
-                    ComPortDevice.SetParam(Parity, nameof(Parity));
-                    ComPortDevice.SetParam(ReadTimeout, nameof(ReadTimeout));
-                    ComPortDevice.SetParam(WriteTimeout, nameof(WriteTimeout));
+                    ComPortDevice.ComPort.BaudRate = BaudRate;
+                    ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
+                    ComPortDevice.ComPort.DataBits = DataBits;
+                    ComPortDevice.ComPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
+                    ComPortDevice.ComPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
+                    ComPortDevice.ComPort.StopBits = StopBits;
+                    ComPortDevice.ComPort.Handshake = Handshake;
+                    ComPortDevice.ComPort.Parity = Parity;
+                    ComPortDevice.ComPort.ReadTimeout = ReadTimeout;
+                    ComPortDevice.ComPort.WriteTimeout = WriteTimeout;
+
+
+                    GlobalMethod.ShowMsg("Listen COM Port:" + ComPortDevice.ComPort.PortName
+                        + "\nBaudRate:" + ComPortDevice.ComPort.BaudRate +
+                        "\nDatabits:" + ComPortDevice.ComPort.DataBits, MainFrame.ViewModel.MsgType.Info);
 
                     //Watch the listening state for serial device
                     ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
-
-                    ComPortDevice.Listen();
+                    ComPortDevice.DataReceived += ComPortDevice_DataReceived;
+                    await ComPortDevice.Listen();
                 });
             }
+        }
+
+        private void ComPortDevice_DataReceived(DataReceivedEventArgs args)
+        {
+            ReceivedData += args.Data;
+            System.Diagnostics.Debug.Write(ReceivedData);
         }
 
         /// <summary>
@@ -100,6 +152,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         private void ComPortDevice_ListenStateChange()
         {
             Idle = !ComPortDevice.IsListening;
+            if (Idle)
+            {
+                ReceivedData = "";
+            }
         }
 
         /// <summary>
@@ -297,6 +353,28 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             set
             {
                 Set(ref _writeTimeout, value);
+            }
+        }
+
+        private string _receivedData;
+
+        public string ReceivedData
+        {
+            get { return _receivedData; }
+            set
+            {
+                Set(ref _receivedData, value);
+            }
+        }
+
+        private DataType _sendDataType;
+
+        public DataType SendDataType
+        {
+            get { return _sendDataType; }
+            set
+            {
+                Set(ref _sendDataType, value);
             }
         }
 

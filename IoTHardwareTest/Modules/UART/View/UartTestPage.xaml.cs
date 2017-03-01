@@ -1,5 +1,6 @@
 ﻿using IoTHardwareTest.Modules.UART.ViewModel;
 using IoTHardwareTest.Tools;
+using IoTHardwareTest.Tools.DeviceOperators;
 using IoTHardwareTest.Tools.MVVM;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -35,6 +37,16 @@ namespace IoTHardwareTest.Modules.UART.View
         public UartTestPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+        }
+
+        private void rtbReceivedData_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            svRecvData.ChangeView(null, svRecvData.ScrollableHeight, null, false);
         }
     }
 }

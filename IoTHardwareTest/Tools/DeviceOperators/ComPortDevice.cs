@@ -14,6 +14,15 @@ using Windows.Storage.Streams;
 
 namespace IoTHardwareTest.Tools.DeviceOperators
 {
+    class DataReceivedEventArgs
+    {
+        public DataReceivedEventArgs(string data)
+        {
+            Data = data;
+        }
+        public string Data { get; set; }
+    }
+
     class ComPortDevice
     {
         /// <summary>
@@ -31,6 +40,10 @@ namespace IoTHardwareTest.Tools.DeviceOperators
         /// Event invoked once the com port listening status is changed
         /// </summary>
         public static event ListenStateChangedEventHandler ListenStateChanged;
+
+
+        public delegate void DataReceivedHandler(DataReceivedEventArgs args);
+        public static event DataReceivedHandler DataReceived;
 
         private static ComPortDevice port;
 
@@ -73,7 +86,8 @@ namespace IoTHardwareTest.Tools.DeviceOperators
                     port = new ComPortDevice();
                 }
                 port.Dev = await SerialDevice.FromIdAsync(devId);
-                port.Dev.ErrorReceived += Dev_ErrorReceived;
+                if (port.Dev != null)
+                    port.Dev.ErrorReceived += Dev_ErrorReceived;
             }
             catch (Exception ex)
             {
@@ -100,12 +114,18 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             return await port.WriteAsync(data);
         }
 
+        public static async Task<UInt32> SendData(string strData)
+        {
+            return await port.WriteAsync(strData);
+        }
+
         /// <summary>
         /// Listen COM port for read
         /// </summary>
-        public static async void Listen()
+        public static async Task Listen()
         {
-            port.ListenCOM();
+            port.readCts = new CancellationTokenSource();
+            await port.ListenCOM();
         }
 
         public static void StopListen()
@@ -125,39 +145,17 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             IsConnected = false;
         }
 
-        /// <summary>
-        /// Set property for COM port(Such as Baudrate etc.)
-        /// </summary>
-        /// <param name="value">property value</param>
-        /// <param name="property">property name</param>
-        public static void SetParam(object value, string property)
-        {
-            try
-            {
-                if (IsConnected)
-                {
-                    PropertyInfo propInfo = typeof(SerialDevice).GetProperty(property);
-                    propInfo.SetValue(ComPort, value, null);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         private ComPortDevice()
         {
             IsConnected = false;
         }
 
-        private async void ListenCOM()
+        private async Task ListenCOM()
         {
             try
             {
                 if (Dev != null)
                 {
-                    readCts = new CancellationTokenSource();
                     dataReaderObject = new DataReader(Dev.InputStream);
 
                     IsListening = true;
@@ -225,7 +223,11 @@ namespace IoTHardwareTest.Tools.DeviceOperators
                 {
                     readStr = new StringBuilder();
                 }
-                readStr.Append(dataReaderObject.ReadString(bytesRead));
+                byte[] data = new byte[bytesRead];
+                dataReaderObject.ReadBytes(data);
+                var str = Encoding.ASCII.GetString(data);
+                readStr.Append(str);
+                DataReceived?.Invoke(new DataReceivedEventArgs(str));
             }
         }
 
@@ -254,6 +256,16 @@ namespace IoTHardwareTest.Tools.DeviceOperators
                 dataWriterObject = new DataWriter(Dev.OutputStream);
             }
             dataWriterObject.WriteBytes(data);
+            return await dataWriterObject.StoreAsync();
+        }
+
+        private async Task<UInt32> WriteAsync(string strData)
+        {
+            if (dataWriterObject == null)
+            {
+                dataWriterObject = new DataWriter(Dev.OutputStream);
+            }
+            dataWriterObject.WriteString(strData);
             return await dataWriterObject.StoreAsync();
         }
 

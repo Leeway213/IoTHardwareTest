@@ -207,15 +207,29 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <ComboBox Header="DataType:">
+                        <ComboBox Header="DataType:" SelectedIndex="{x:Bind Vm.SendDataType, Mode=TwoWay, Converter={StaticResource EnumToInt}}">
                             <ComboBoxItem Content="Str"></ComboBoxItem>
                             <ComboBoxItem Content="Hex"></ComboBoxItem>
                         </ComboBox>
-                        <TextBox Header="Data:" Width="400" BorderThickness="1"></TextBox>
-                        <Button Content="Send" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="tbSendData" Header="Data:" Width="400" BorderThickness="1"></TextBox>
+                        <Button Content="Send" VerticalAlignment="Bottom" Command="{x:Bind Vm.SendDataCmd}" CommandParameter="{x:Bind Path=tbSendData.Text, Mode=OneWay}"/>
                     </StackPanel>
-                    <RichTextBlock IsTextSelectionEnabled="True" TextWrapping="WrapWholeWords" Grid.Row="1" OverflowContentTarget="{x:Bind Path=richTextOverflow}"></RichTextBlock>
-                    <RichTextBlockOverflow x:Name="richTextOverflow" Grid.Row="1"></RichTextBlockOverflow>
+                    <ScrollViewer
+                        x:Name="svRecvData"
+                        Grid.Row="1" 
+                        VerticalScrollMode="Auto"
+                        HorizontalScrollMode="Disabled"
+                        BringIntoViewOnFocusChange="True"
+                        IsVerticalRailEnabled="True"
+                        IsTabStop="True"
+                        >
+                        <RichTextBlock x:Name="rtbReceivedData" IsTextSelectionEnabled="True" TextWrapping="WrapWholeWords"
+                                   SizeChanged="rtbReceivedData_SizeChanged">
+                            <Paragraph FontSize="10" LineHeight="11" FontStyle="Italic">
+                                <Run Text="{x:Bind Vm.ReceivedData, Mode=OneWay}"></Run>
+                            </Paragraph>
+                        </RichTextBlock>
+                    </ScrollViewer>
                 </Grid>
             </controls:BladeItem>
 
