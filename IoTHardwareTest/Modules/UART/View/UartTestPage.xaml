@@ -201,7 +201,11 @@
                                 CloseButtonBackground="Black"
                                 CloseButtonForeground="White"
                                 >
-                <StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
                         <ComboBox Header="DataType:">
                             <ComboBoxItem Content="Str"></ComboBoxItem>
@@ -210,7 +214,9 @@
                         <TextBox Header="Data:" Width="400" BorderThickness="1"></TextBox>
                         <Button Content="Send" VerticalAlignment="Bottom"/>
                     </StackPanel>
-                </StackPanel>
+                    <RichTextBlock IsTextSelectionEnabled="True" TextWrapping="WrapWholeWords" Grid.Row="1" OverflowContentTarget="{x:Bind Path=richTextOverflow}"></RichTextBlock>
+                    <RichTextBlockOverflow x:Name="richTextOverflow" Grid.Row="1"></RichTextBlockOverflow>
+                </Grid>
             </controls:BladeItem>
 
         </controls:BladeView>

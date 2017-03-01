@@ -18,6 +18,11 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
     public class UartPageViewModel : ViewModelBase
     {
 
+        /// <summary>
+        /// Constractor: 
+        /// 1. Initial some properties
+        /// 2. Get available serial devices
+        /// </summary>
         public UartPageViewModel()
         {
             SelDevIndex = -1;
@@ -44,6 +49,9 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             StopBits = SerialStopBitCount.One;
         }
 
+        /// <summary>
+        /// Serial device selection changed command
+        /// </summary>
         public RelayCommand SelectionChangedCmd
         {
             get
@@ -57,12 +65,16 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             }
         }
 
+        /// <summary>
+        /// Listen button command
+        /// </summary>
         public RelayCommand ListenCmd
         {
             get
             {
                 return new RelayCommand(() =>
                 {
+                    //Set parameters for serial device listening
                     ComPortDevice.SetParam(BaudRate, nameof(BaudRate));
                     ComPortDevice.SetParam(IsDataTerminalReadyEnabled, nameof(IsDataTerminalReadyEnabled));
                     ComPortDevice.SetParam(DataBits, nameof(DataBits));
@@ -74,18 +86,25 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                     ComPortDevice.SetParam(ReadTimeout, nameof(ReadTimeout));
                     ComPortDevice.SetParam(WriteTimeout, nameof(WriteTimeout));
 
-                    ComPortDevice.ListenStateChange += ComPortDevice_ListenStateChange;
+                    //Watch the listening state for serial device
+                    ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
 
                     ComPortDevice.Listen();
                 });
             }
         }
 
+        /// <summary>
+        /// once serial device listening state changed, change Idle property
+        /// </summary>
         private void ComPortDevice_ListenStateChange()
         {
             Idle = !ComPortDevice.IsListening;
         }
 
+        /// <summary>
+        /// StopListen button command
+        /// </summary>
         public RelayCommand StopListenCmd
         {
             get
@@ -98,6 +117,9 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             }
         }
 
+        /// <summary>
+        /// get availables serial devices
+        /// </summary>
         private async void GetSerialDevices()
         {
             try
@@ -126,8 +148,14 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             }
         }
 
+        /// <summary>
+        /// serial devices collection
+        /// </summary>
         public ObservableCollection<DeviceInformation> DevCollection { get; set; }
 
+        /// <summary>
+        /// Current selected serial device
+        /// </summary>
         public DeviceInformation SelectedDev
         {
             get
@@ -138,6 +166,9 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
 
         private int _selDevIndex;
 
+        /// <summary>
+        /// Selected device index in ComboBox
+        /// </summary>
         public int SelDevIndex
         {
             get { return _selDevIndex; }
@@ -161,6 +192,9 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
 
         private bool _idle;
 
+        /// <summary>
+        /// Represent if the serial device is idle 
+        /// </summary>
         public bool Idle
         {
             get { return _idle; }

@@ -16,15 +16,27 @@ namespace IoTHardwareTest.Tools.DeviceOperators
 {
     class ComPortDevice
     {
+        /// <summary>
+        /// Represent if Com port is connected
+        /// </summary>
         public static bool IsConnected;
 
+        /// <summary>
+        /// Represent if Com port is listening 
+        /// </summary>
         public static bool IsListening;
 
         public delegate void ListenStateChangedEventHandler();
-        public static event ListenStateChangedEventHandler ListenStateChange;
+        /// <summary>
+        /// Event invoked once the com port listening status is changed
+        /// </summary>
+        public static event ListenStateChangedEventHandler ListenStateChanged;
 
         private static ComPortDevice port;
 
+        /// <summary>
+        /// Single instance for COM port
+        /// </summary>
         public static SerialDevice ComPort
         {
             get
@@ -37,12 +49,21 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             }
         }
 
+        /// <summary>
+        /// Scan available serial devices
+        /// </summary>
+        /// <returns>Task returned a collection containing all serial device information</returns>
         public static async Task<DeviceInformationCollection> ScanSerialDevices()
         {
             string aqs = SerialDevice.GetDeviceSelector();
             return await DeviceInformation.FindAllAsync(aqs);
         }
 
+        /// <summary>
+        /// Connect a serial device
+        /// </summary>
+        /// <param name="devId">serial device ID</param>
+        /// <returns></returns>
         public static async Task Connect(string devId)
         {
             try
@@ -52,6 +73,7 @@ namespace IoTHardwareTest.Tools.DeviceOperators
                     port = new ComPortDevice();
                 }
                 port.Dev = await SerialDevice.FromIdAsync(devId);
+                port.Dev.ErrorReceived += Dev_ErrorReceived;
             }
             catch (Exception ex)
             {
@@ -63,58 +85,27 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             }
         }
 
+        private static void Dev_ErrorReceived(SerialDevice sender, ErrorReceivedEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Send data to serial device for TX
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static async Task<UInt32> SendData(byte[] data)
         {
             return await port.WriteAsync(data);
         }
 
+        /// <summary>
+        /// Listen COM port for read
+        /// </summary>
         public static async void Listen()
         {
-            try
-            {
-                if (IsConnected)
-                {
-                    if (port.readCts == null)
-                    {
-                        port.readCts = new CancellationTokenSource();
-                    }
-                    if (port.dataReaderObject == null)
-                    {
-                        port.dataReaderObject = new DataReader(ComPort.InputStream);
-                    }
-
-                    IsListening = true;
-                    ListenStateChange?.Invoke();
-                    while (true)
-                    {
-                        await port.ReadAsync();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (ex.GetType().Name == "TaskCanceledException")
-                {
-                    //TODO:
-                }
-                else
-                    throw ex;
-            }
-            finally
-            {
-                IsListening = false;
-                ListenStateChange?.Invoke();
-                if (port.dataReaderObject != null)
-                {
-                    port.dataReaderObject.DetachStream();
-                    port.dataReaderObject = null;
-                }
-                if (port.readStr != null)
-                {
-                    port.readStr.Clear();
-                    port.readStr = null;
-                }
-            }
+            port.ListenCOM();
         }
 
         public static void StopListen()
@@ -134,6 +125,11 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             IsConnected = false;
         }
 
+        /// <summary>
+        /// Set property for COM port(Such as Baudrate etc.)
+        /// </summary>
+        /// <param name="value">property value</param>
+        /// <param name="property">property name</param>
         public static void SetParam(object value, string property)
         {
             try
@@ -155,22 +151,70 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             IsConnected = false;
         }
 
-        private async Task ReadAsync()
+        private async void ListenCOM()
         {
-           
+            try
+            {
+                if (Dev != null)
+                {
+                    readCts = new CancellationTokenSource();
+                    dataReaderObject = new DataReader(Dev.InputStream);
+
+                    IsListening = true;
+                    ListenStateChanged?.Invoke();
+                    while (true)
+                    {
+                        await ReadAsync(readCts.Token);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.GetType().Name == "TaskCanceledException")
+                {
+                    //TODO:
+                }
+                else
+                    throw ex;
+            }
+            finally
+            {
+                IsListening = false;
+                ListenStateChanged?.Invoke();
+                if (dataReaderObject != null)
+                {
+                    dataReaderObject.DetachStream();
+                    dataReaderObject = null;
+                }
+                if (readCts != null)
+                {
+                    readCts.Dispose();
+                    readCts = null;
+                }
+                if (readStr != null)
+                {
+                    readStr.Clear();
+                    readStr = null;
+                }
+            }
+        }
+
+        private async Task ReadAsync(CancellationToken token)
+        {
+
 
             Task<UInt32> loadAsyncTask;
 
             uint ReadBufferLength = 1024;
 
             // If task cancellation was requested, comply
-            readCts.Token.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
             // Set InputStreamOptions to complete the asynchronous read operation when one or more bytes is available
             dataReaderObject.InputStreamOptions = InputStreamOptions.Partial;
 
             // Create a task object to wait for data on the serialPort.InputStream
-            loadAsyncTask = dataReaderObject.LoadAsync(ReadBufferLength).AsTask(readCts.Token);
+            loadAsyncTask = dataReaderObject.LoadAsync(ReadBufferLength).AsTask(token);
 
             // Launch the task and wait
             UInt32 bytesRead = await loadAsyncTask;
@@ -198,6 +242,11 @@ namespace IoTHardwareTest.Tools.DeviceOperators
             }
         }
 
+        /// <summary>
+        /// Write operation for serial device
+        /// </summary>
+        /// <param name="data">bytes array to write</param>
+        /// <returns>written data size</returns>
         private async Task<UInt32> WriteAsync(byte[] data)
         {
             if (dataWriterObject == null)
