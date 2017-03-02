@@ -72,7 +72,13 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                             }
                             else
                             {
-                                byte[] bData = Encoding.ASCII.GetBytes(data);
+                                byte[] tmp = Encoding.ASCII.GetBytes(data);
+                                byte[] bData = new byte[tmp.Length + 1];
+                                for (int x = 0; x < tmp.Length; x++)
+                                {
+                                    bData[x] = tmp[x];
+                                }
+                                bData[tmp.Length] = 0x0D;
                                 await ComPortDevice.SendData(bData);
                             }
                             break;
