@@ -118,9 +118,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             {
                 return new RelayCommand(async () =>
                 {
-                    //if (ComPortDevice.IsConnected)
-                    //    ComPortDevice.Disconnect();
-                    //await ComPortDevice.Connect(SelectedDev.Id);
+                    if (SelectedDev == null)
+                    {
+                        return;
+                    }
                     //Set parameters for serial device listening
                     ComPortDevice.ComPort.BaudRate = BaudRate;
                     ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
