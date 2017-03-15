@@ -210,7 +210,7 @@
                             <SymbolIcon Symbol="Cancel"></SymbolIcon>
                         </Button.Content>
                     </Button>
-                    <TextBlock Margin="20" Text="{x:Bind Vm.Message,Mode=OneWay}"/>
+                    <TextBlock Margin="20" Text="{x:Bind Vm.Message,Mode=OneWay}" TextWrapping="WrapWholeWords"/>
                 </Grid>
             </Grid>
                 

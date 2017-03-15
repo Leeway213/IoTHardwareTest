@@ -48,8 +48,8 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             DataBits = 8;
             BreakSignalState = false;
             Handshake = SerialHandshake.None;
-            IsDataTerminalReadyEnabled = true;
-            IsRequestToSendEnabled = true;
+            IsDataTerminalReadyEnabled = false;
+            IsRequestToSendEnabled = false;
             Parity = SerialParity.None;
             ReadTimeout = TimeSpan.FromMilliseconds(1000);
             WriteTimeout = TimeSpan.FromMilliseconds(1000);
@@ -62,7 +62,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             {
                 return new RelayCommand<string>(async (data) =>
                 {
-                    switch(SendDataType)
+                    switch (SendDataType)
                     {
                         case DataType.String:
                             if (string.IsNullOrEmpty(data))
@@ -88,7 +88,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                             await ComPortDevice.SendData(bInt);
                             break;
                     }
-                    
+
                 });
             }
         }
@@ -118,31 +118,39 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
             {
                 return new RelayCommand(async () =>
                 {
-                    if (SelectedDev == null)
+                    try
                     {
-                        return;
+
+                        if (SelectedDev == null)
+                        {
+                            return;
+                        }
+                        //Set parameters for serial device listening
+                        ComPortDevice.ComPort.BaudRate = BaudRate;
+                        ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
+                        ComPortDevice.ComPort.DataBits = DataBits;
+                        ComPortDevice.ComPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
+                        ComPortDevice.ComPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
+                        ComPortDevice.ComPort.StopBits = StopBits;
+                        ComPortDevice.ComPort.Handshake = Handshake;
+                        ComPortDevice.ComPort.Parity = Parity;
+                        ComPortDevice.ComPort.ReadTimeout = ReadTimeout;
+                        ComPortDevice.ComPort.WriteTimeout = WriteTimeout;
+
+
+                        GlobalMethod.ShowMsg("Listen COM Port:" + ComPortDevice.ComPort.PortName
+                            + "\nBaudRate:" + ComPortDevice.ComPort.BaudRate +
+                            "\nDatabits:" + ComPortDevice.ComPort.DataBits, MainFrame.ViewModel.MsgType.Info);
+
+                        //Watch the listening state for serial device
+                        ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
+                        ComPortDevice.DataReceived += ComPortDevice_DataReceived;
+                        await ComPortDevice.Listen();
                     }
-                    //Set parameters for serial device listening
-                    ComPortDevice.ComPort.BaudRate = BaudRate;
-                    ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
-                    ComPortDevice.ComPort.DataBits = DataBits;
-                    ComPortDevice.ComPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
-                    ComPortDevice.ComPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
-                    ComPortDevice.ComPort.StopBits = StopBits;
-                    ComPortDevice.ComPort.Handshake = Handshake;
-                    ComPortDevice.ComPort.Parity = Parity;
-                    ComPortDevice.ComPort.ReadTimeout = ReadTimeout;
-                    ComPortDevice.ComPort.WriteTimeout = WriteTimeout;
-
-
-                    GlobalMethod.ShowMsg("Listen COM Port:" + ComPortDevice.ComPort.PortName
-                        + "\nBaudRate:" + ComPortDevice.ComPort.BaudRate +
-                        "\nDatabits:" + ComPortDevice.ComPort.DataBits, MainFrame.ViewModel.MsgType.Info);
-
-                    //Watch the listening state for serial device
-                    ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
-                    ComPortDevice.DataReceived += ComPortDevice_DataReceived;
-                    await ComPortDevice.Listen();
+                    catch(Exception ex)
+                    {
+                        GlobalMethod.ShowMsg(ex.StackTrace + "\n" + ex.Message, MainFrame.ViewModel.MsgType.Exception);
+                    }
                 });
             }
         }

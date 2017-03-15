@@ -48,149 +48,151 @@
                                 IsOpen="True"
                                 TitleBarVisibility="Collapsed"
                                 >
-                <RelativePanel x:Name="rootPanel" >
+                <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Auto">
+                    <RelativePanel x:Name="rootPanel" >
 
-                    <RelativePanel x:Name="devSelectorPanel" Margin="20,20,0,0">
-                        <TextBlock x:Name="tbComDev" Text="COM Device:"
+                        <RelativePanel x:Name="devSelectorPanel" Margin="20,20,0,0">
+                            <TextBlock x:Name="tbComDev" Text="COM Device:"
                             Margin="10,10,0,0"
                            TextAlignment="Center" FontSize="20"></TextBlock>
-                        <ComboBox x:Name="cbDevId" VerticalAlignment="Center"
+                            <ComboBox x:Name="cbDevId" VerticalAlignment="Center"
                           Margin="2,10,0,0"
                           RelativePanel.RightOf="tbComDev"
                           ItemsSource="{x:Bind Vm.DevCollection, Mode=OneWay}"
                           SelectedIndex="{x:Bind Vm.SelDevIndex, Mode=TwoWay}"
                           IsEnabled="{x:Bind Vm.Idle, Mode=OneWay}"
                           >
-                            <i:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged" >
-                                    <core:InvokeCommandAction Command="{x:Bind Vm.SelectionChangedCmd}"></core:InvokeCommandAction>
-                                </core:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="dev:DeviceInformation">
-                                    <TextBlock Text="{x:Bind Name}"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <StackPanel RelativePanel.Below="tbComDev"
+                                <i:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged" >
+                                        <core:InvokeCommandAction Command="{x:Bind Vm.SelectionChangedCmd}"></core:InvokeCommandAction>
+                                    </core:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="dev:DeviceInformation">
+                                        <TextBlock Text="{x:Bind Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <StackPanel RelativePanel.Below="tbComDev"
                             Margin="20">
-                            <TextBlock FontSize="20" Text="Device Information"></TextBlock>
-                            <TextBlock x:Name="tbDevName" FontSize="10" Margin="0,10,0,0"
+                                <TextBlock FontSize="20" Text="Device Information"></TextBlock>
+                                <TextBlock x:Name="tbDevName" FontSize="10" Margin="0,10,0,0"
                                Text="{x:Bind Vm.SelectedDev.Name, Mode=OneWay}"></TextBlock>
-                            <TextBlock x:Name="tbDevId" 
+                                <TextBlock x:Name="tbDevId" 
                            FontSize="10"
                            Text="{x:Bind Vm.SelectedDev.Id, Mode=OneWay}"
                            ></TextBlock>
-                        </StackPanel>
-                    </RelativePanel>
+                            </StackPanel>
+                        </RelativePanel>
 
-                    <StackPanel x:Name="ctrlsPanel" RelativePanel.Below="devSelectorPanel"
+                        <StackPanel x:Name="ctrlsPanel" RelativePanel.Below="devSelectorPanel"
                         Margin="20,0,0,10"
                         Orientation="Horizontal">
-                        <Button x:Name="btnConn" Content="Listen" 
+                            <Button x:Name="btnConn" Content="Listen" 
                         IsEnabled="{x:Bind Vm.Idle, Mode=OneWay}"
                         Command="{x:Bind Vm.ListenCmd}"/>
-                        <Button x:Name="btnDisConn" Margin="10" Content="StopListen" Command="{x:Bind Vm.StopListenCmd}"/>
-                    </StackPanel>
+                            <Button x:Name="btnDisConn" Margin="10" Content="StopListen" Command="{x:Bind Vm.StopListenCmd}"/>
+                        </StackPanel>
 
-                    <StackPanel x:Name="cusParaPanel" RelativePanel.Below="ctrlsPanel">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel 
+                        <StackPanel x:Name="cusParaPanel" RelativePanel.Below="ctrlsPanel">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel 
                         x:Name="baudratePanel"
                         Margin="10,0,0,0"
                         >
-                                <TextBlock Text="Baudrate:" HorizontalAlignment="Left"></TextBlock>
-                                <TextBox x:Name="tbBaudrate" Text="{x:Bind Vm.BaudRate, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                            <StackPanel 
+                                    <TextBlock Text="Baudrate:" HorizontalAlignment="Left"></TextBlock>
+                                    <TextBox x:Name="tbBaudrate" Text="{x:Bind Vm.BaudRate, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                                <StackPanel 
                         x:Name="dataBitsPanel"
                         Margin="10,0,0,0"
                         >
-                                <TextBlock Text="DataBits:" HorizontalAlignment="Left"></TextBlock>
-                                <TextBox x:Name="tbDataBits" Text="{x:Bind Vm.DataBits, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="DataBits:" HorizontalAlignment="Left"></TextBlock>
+                                    <TextBox x:Name="tbDataBits" Text="{x:Bind Vm.DataBits, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel 
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel 
                         x:Name="ReadTimeoutPanel"
                         Margin="10,10,0,0"
                         >
-                                <TextBlock Text="ReadTimeout(ms):" HorizontalAlignment="Left"></TextBlock>
-                                <TextBox x:Name="tbReadTimeout" Text="{x:Bind Vm.ReadTimeout, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                            <StackPanel 
+                                    <TextBlock Text="ReadTimeout(ms):" HorizontalAlignment="Left"></TextBlock>
+                                    <TextBox x:Name="tbReadTimeout" Text="{x:Bind Vm.ReadTimeout, Mode=TwoWay}" Width="110" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                                <StackPanel 
                         x:Name="WriteTimeoutPanel"
                         Margin="10,10,0,0"
                         >
-                                <TextBlock HorizontalAlignment="Left" Text="WriteTimeout(ms):"></TextBlock>
-                                <TextBox x:Name="tbWriteTimeout" HorizontalAlignment="Left" Text="{x:Bind Vm.WriteTimeout, Mode=TwoWay}" Width="110"/>
+                                    <TextBlock HorizontalAlignment="Left" Text="WriteTimeout(ms):"></TextBlock>
+                                    <TextBox x:Name="tbWriteTimeout" HorizontalAlignment="Left" Text="{x:Bind Vm.WriteTimeout, Mode=TwoWay}" Width="110"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
 
-                    </StackPanel>
-                    <StackPanel x:Name="selParaPanel" RelativePanel.Below="cusParaPanel" 
+                        </StackPanel>
+                        <StackPanel x:Name="selParaPanel" RelativePanel.Below="cusParaPanel" 
                         >
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox Header="BreakSignal:" 
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox Header="BreakSignal:" 
                             Margin="10,10,0,0"
                           SelectedIndex="{x:Bind Vm.BreakSignalState, Mode=TwoWay, Converter={StaticResource BooleanToInt}}">
-                                <ComboBoxItem Content="No"></ComboBoxItem>
-                                <ComboBoxItem Content="Yes"></ComboBoxItem>
-                            </ComboBox>
+                                    <ComboBoxItem Content="No"></ComboBoxItem>
+                                    <ComboBoxItem Content="Yes"></ComboBoxItem>
+                                </ComboBox>
 
-                            <ComboBox Header="StopBits:"
+                                <ComboBox Header="StopBits:"
                           Margin="10,10,0,0"
                           SelectedIndex="{x:Bind Vm.StopBits, Mode=TwoWay, Converter={StaticResource EnumToInt}}"
                           >
-                                <ComboBoxItem Content="One"/>
-                                <ComboBoxItem Content="OnePointFive"/>
-                                <ComboBoxItem Content="Two"/>
-                            </ComboBox>
-                        </StackPanel>
+                                    <ComboBoxItem Content="One"/>
+                                    <ComboBoxItem Content="OnePointFive"/>
+                                    <ComboBoxItem Content="Two"/>
+                                </ComboBox>
+                            </StackPanel>
 
-                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
 
-                            <ComboBox Header="Handshake:"
+                                <ComboBox Header="Handshake:"
                             Margin="10,10,0,0"
                           SelectedIndex="{x:Bind Vm.Handshake, Mode=TwoWay, Converter={StaticResource EnumToInt}}"
                           >
-                                <ComboBoxItem Content="None"/>
-                                <ComboBoxItem Content="RequestToSend"/>
-                                <ComboBoxItem Content="XOnXOff"/>
-                                <ComboBoxItem Content="RequestToSendXOnXOff"/>
-                            </ComboBox>
+                                    <ComboBoxItem Content="None"/>
+                                    <ComboBoxItem Content="RequestToSend"/>
+                                    <ComboBoxItem Content="XOnXOff"/>
+                                    <ComboBoxItem Content="RequestToSendXOnXOff"/>
+                                </ComboBox>
 
-                            <ComboBox Header="Parity:"
+                                <ComboBox Header="Parity:"
                             Margin="10,10,0,0"
                           SelectedIndex="{x:Bind Vm.Parity, Mode=TwoWay, Converter={StaticResource EnumToInt}}"
                           >
-                                <ComboBoxItem Content="None"/>
-                                <ComboBoxItem Content="Odd"/>
-                                <ComboBoxItem Content="Even"/>
-                                <ComboBoxItem Content="Mark"/>
-                                <ComboBoxItem Content="Space"/>
-                            </ComboBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox Header="DataTerminalReady:"
+                                    <ComboBoxItem Content="None"/>
+                                    <ComboBoxItem Content="Odd"/>
+                                    <ComboBoxItem Content="Even"/>
+                                    <ComboBoxItem Content="Mark"/>
+                                    <ComboBoxItem Content="Space"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox Header="DataTerminalReady:"
                               Margin="10,10,0,0"
                               SelectedIndex="{x:Bind Vm.IsDataTerminalReadyEnabled, Mode=TwoWay, Converter={StaticResource BooleanToInt}}"
                               >
-                                <ComboBoxItem Content="No"/>
-                                <ComboBoxItem Content="Yes"/>
-                            </ComboBox>
-                            <ComboBox Header="RequestToSend:"
+                                    <ComboBoxItem Content="No"/>
+                                    <ComboBoxItem Content="Yes"/>
+                                </ComboBox>
+                                <ComboBox Header="RequestToSend:"
                               Margin="10,10,0,0"
                               SelectedIndex="{x:Bind Vm.IsRequestToSendEnabled, Mode=TwoWay, Converter={StaticResource BooleanToInt}}"
                               >
-                                <ComboBoxItem Content="No"/>
-                                <ComboBoxItem Content="Yes"/>
-                            </ComboBox>
-                        </StackPanel>
+                                    <ComboBoxItem Content="No"/>
+                                    <ComboBoxItem Content="Yes"/>
+                                </ComboBox>
+                            </StackPanel>
 
-                    </StackPanel>
-                </RelativePanel>
+                        </StackPanel>
+                    </RelativePanel>
+                </ScrollViewer>
             </controls:BladeItem>
 
             <controls:BladeItem Width="550"

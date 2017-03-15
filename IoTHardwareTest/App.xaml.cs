@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Threading;
 using IoTHardwareTest.Modules.MainFrame.View;
+using IoTHardwareTest.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +33,13 @@ namespace IoTHardwareTest
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            this.UnhandledException += App_UnhandledException;
 
+        }
+
+        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            GlobalMethod.ShowMsg(e.Message, Modules.MainFrame.ViewModel.MsgType.Exception);
         }
 
         /// <summary>
@@ -106,5 +113,6 @@ namespace IoTHardwareTest
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
     }
 }
