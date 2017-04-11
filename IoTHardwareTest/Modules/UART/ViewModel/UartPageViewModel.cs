@@ -125,6 +125,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                         {
                             return;
                         }
+                        if(!ComPortDevice.IsConnected)
+                        {
+                            throw new Exception("serial device is not connected!");
+                        }
                         //Set parameters for serial device listening
                         ComPortDevice.ComPort.BaudRate = BaudRate;
                         ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
