@@ -103,8 +103,12 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                 return new RelayCommand(async () =>
                {
                    if (ComPortDevice.IsConnected)
+                   {
+                       ComPortDevice.ListenStateChanged -= ComPortDevice_ListenStateChange;
                        ComPortDevice.Disconnect();
+                   }
                    await ComPortDevice.Connect(SelectedDev.Id);
+                   ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
                });
             }
         }
@@ -125,7 +129,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                         {
                             return;
                         }
-                        if(!ComPortDevice.IsConnected)
+                        if (!ComPortDevice.IsConnected)
                         {
                             throw new Exception("serial device is not connected!");
                         }
@@ -133,8 +137,8 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                         ComPortDevice.ComPort.BaudRate = BaudRate;
                         ComPortDevice.ComPort.BreakSignalState = BreakSignalState;
                         ComPortDevice.ComPort.DataBits = DataBits;
-                        ComPortDevice.ComPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
-                        ComPortDevice.ComPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
+                        //ComPortDevice.ComPort.IsDataTerminalReadyEnabled = IsDataTerminalReadyEnabled;
+                        //ComPortDevice.ComPort.IsRequestToSendEnabled = IsRequestToSendEnabled;
                         ComPortDevice.ComPort.StopBits = StopBits;
                         ComPortDevice.ComPort.Handshake = Handshake;
                         ComPortDevice.ComPort.Parity = Parity;
@@ -147,11 +151,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                             "\nDatabits:" + ComPortDevice.ComPort.DataBits, MainFrame.ViewModel.MsgType.Info);
 
                         //Watch the listening state for serial device
-                        ComPortDevice.ListenStateChanged += ComPortDevice_ListenStateChange;
                         ComPortDevice.DataReceived += ComPortDevice_DataReceived;
                         await ComPortDevice.Listen();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         GlobalMethod.ShowMsg(ex.StackTrace + "\n" + ex.Message, MainFrame.ViewModel.MsgType.Exception);
                     }
@@ -187,7 +190,10 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
                 return new RelayCommand(() =>
                 {
                     if (ComPortDevice.IsListening)
+                    {
+                        ComPortDevice.DataReceived -= ComPortDevice_DataReceived;
                         ComPortDevice.StopListen();
+                    }
                 });
             }
         }

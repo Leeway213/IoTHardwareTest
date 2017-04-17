@@ -17,7 +17,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>IoTHardwareTest_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>CE7B90C1D5E9782789AD3F9D4D6CEC7CCB12646B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>D1AA76A1D323E513DD175DFBF277F83E0E703EFF</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Never</AppxBundle>
   </PropertyGroup>

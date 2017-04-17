@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="265b58a5-a3a2-4a70-8647-e44c1db690fa" Publisher="CN=leewa" Version="1.0.1.0" />
+  <Identity Name="265b58a5-a3a2-4a70-8647-e44c1db690fa" Publisher="CN=leewa" Version="1.0.3.0" />
   <mp:PhoneIdentity PhoneProductId="265b58a5-a3a2-4a70-8647-e44c1db690fa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>SplitViewTemplate</DisplayName>
