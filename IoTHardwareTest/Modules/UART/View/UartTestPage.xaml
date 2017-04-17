@@ -74,14 +74,21 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <StackPanel RelativePanel.Below="tbComDev"
-                            Margin="20">
+                                    Margin="20">
                                 <TextBlock FontSize="20" Text="Device Information"></TextBlock>
                                 <TextBlock x:Name="tbDevName" FontSize="10" Margin="0,10,0,0"
-                               Text="{x:Bind Vm.SelectedDev.Name, Mode=OneWay}"></TextBlock>
+                                    Text="{x:Bind Vm.SelectedDev.Name, Mode=OneWay}"></TextBlock>
                                 <TextBlock x:Name="tbDevId" 
-                           FontSize="10"
-                           Text="{x:Bind Vm.SelectedDev.Id, Mode=OneWay}"
-                           ></TextBlock>
+                                    FontSize="10"
+                                    Text="{x:Bind Vm.SelectedDev.Id, Mode=OneWay}"
+                                ></TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Status:"/>
+                                    <ComboBox IsHitTestVisible="False" SelectedIndex="{x:Bind Vm.Idle, Mode=OneWay, Converter={StaticResource BooleanToInt}}">
+                                        <ComboBoxItem Content="Busy"/>
+                                        <ComboBoxItem Content="Idle"/>
+                                    </ComboBox>
+                                </StackPanel>
                             </StackPanel>
                         </RelativePanel>
 
