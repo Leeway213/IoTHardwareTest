@@ -142,6 +142,16 @@ namespace IoTHardwareTest.Tools.DeviceOperators
                 port.Dev.Dispose();
                 port.Dev = null;
             }
+            if(port.dataReaderObject != null)
+            {
+                port.dataReaderObject.Dispose();
+                port.dataReaderObject = null;
+            }
+            if(port.dataWriterObject != null)
+            {
+                port.dataWriterObject.Dispose();
+                port.dataWriterObject = null;
+            }
             IsConnected = false;
         }
 

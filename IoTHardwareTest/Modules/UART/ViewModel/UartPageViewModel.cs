@@ -127,6 +127,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
 
                         if (SelectedDev == null)
                         {
+                            GlobalMethod.ShowMsg("Please select a serial device!", MainFrame.ViewModel.MsgType.Error);
                             return;
                         }
                         if (!ComPortDevice.IsConnected)
@@ -252,7 +253,7 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         /// </summary>
         public int SelDevIndex
         {
-            get { return _selDevIndex; }
+            get => _selDevIndex;
             set
             {
                 Set(ref _selDevIndex, value);
@@ -264,11 +265,8 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
 
         public UInt32 BaudRate
         {
-            get { return _baudrate; }
-            set
-            {
-                Set(ref _baudrate, value);
-            }
+            get => _baudrate;
+            set => Set(ref _baudrate, value);
         }
 
         private bool _idle;
@@ -278,96 +276,72 @@ namespace IoTHardwareTest.Modules.UART.ViewModel
         /// </summary>
         public bool Idle
         {
-            get { return _idle; }
-            set { Set(ref _idle, value); }
+            get => _idle;
+            set => Set(ref _idle, value);
         }
 
         private UInt16 _databits;
 
         public UInt16 DataBits
         {
-            get { return _databits; }
-            set
-            {
-                Set(ref _databits, value);
-            }
+            get => _databits;
+            set => Set(ref _databits, value);
         }
 
         private Boolean _breaksignalstate;
 
         public Boolean BreakSignalState
         {
-            get { return _breaksignalstate; }
-            set
-            {
-                Set(ref _breaksignalstate, value);
-            }
+            get => _breaksignalstate;
+            set => Set(ref _breaksignalstate, value);
         }
 
         private SerialHandshake _handshake;
 
         public SerialHandshake Handshake
         {
-            get { return _handshake; }
-            set
-            {
-                Set(ref _handshake, value);
-            }
+            get => _handshake;
+            set => Set(ref _handshake, value);
         }
 
         private Boolean _isDataTerminalReadyEnabled;
 
         public Boolean IsDataTerminalReadyEnabled
         {
-            get { return _isDataTerminalReadyEnabled; }
-            set
-            {
-                Set(ref _isDataTerminalReadyEnabled, value);
-            }
+            get => _isDataTerminalReadyEnabled;
+            set => Set(ref _isDataTerminalReadyEnabled, value);
         }
 
         private Boolean _isRequestToSendEnabled;
 
         public Boolean IsRequestToSendEnabled
         {
-            get { return _isRequestToSendEnabled; }
-            set
-            {
-                Set(ref _isRequestToSendEnabled, value);
-            }
+            get => _isRequestToSendEnabled; 
+            set => Set(ref _isRequestToSendEnabled, value);
         }
 
         private SerialParity _parity;
 
         public SerialParity Parity
         {
-            get { return _parity; }
-            set
-            {
-                Set(ref _parity, value);
-            }
+            get => _parity; 
+            set => Set(ref _parity, value);
         }
 
         private TimeSpan _readTimeout;
 
         public TimeSpan ReadTimeout
         {
-            get { return _readTimeout; }
-            set
-            {
-                Set(ref _readTimeout, value);
-            }
+            get => _readTimeout;
+            set => Set(ref _readTimeout, value);
         }
 
         private SerialStopBitCount _stopBits;
 
         public SerialStopBitCount StopBits
         {
-            get { return _stopBits; }
-            set
-            {
-                Set(ref _stopBits, value);
-            }
+            get => _stopBits;
+            set => Set(ref _stopBits, value);
         }
 
         private TimeSpan _writeTimeout;
